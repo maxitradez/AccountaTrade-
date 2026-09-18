@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>AccountaTrade — Trading Journal & Coach</title>
+<style>
+:root{--bg:#070707;--card:#101010;--card2:#151515;--text:#f4f4f4;--muted:#8e8e8e;--line:#272727;--gold:#d6ad55;--green:#58c98a;--red:#ed5d5d;--blue:#72a8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}button,input,select,textarea{font:inherit}
+header{position:sticky;top:0;z-index:20;background:rgba(7,7,7,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:16px}
+.head{max-width:1250px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}.logo{font-size:23px;font-weight:900}.logo b{color:var(--gold)}.tag{color:var(--muted);font-size:11px;margin-top:3px}
+nav{max-width:1250px;margin:14px auto 0;display:flex;gap:7px;overflow:auto;padding-bottom:1px}nav button,.btn{border:1px solid var(--line);background:#111;color:#ddd;padding:10px 13px;border-radius:9px;cursor:pointer;white-space:nowrap}nav button.active,.btn.primary{background:var(--gold);color:#111;border-color:var(--gold);font-weight:800}.btn.danger{border-color:#5a2020;color:#ff9a9a}
+main{max-width:1250px;margin:auto;padding:22px 16px 70px}.page{display:none}.page.active{display:block}h1{margin:0 0 5px;font-size:28px}h2{font-size:17px;margin:0 0 14px}.sub{color:var(--muted);margin-bottom:18px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card,.section{background:var(--card);border:1px solid var(--line);border-radius:14px}.card{padding:16px}.section{padding:17px;margin-top:15px}.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.value{font-size:25px;font-weight:850;margin-top:5px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.muted{color:var(--muted)}.small{font-size:12px}.insight{background:#19140a;border-left:3px solid var(--gold);padding:14px;border-radius:9px;line-height:1.55}.bar{height:9px;background:#222;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold);width:0}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.statline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}.statline:last-child{border:0}
+form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.full{grid-column:1/-1}label{display:block;color:#bbb;font-size:11px;margin-bottom:6px}input,select,textarea{width:100%;padding:11px;border:1px solid var(--line);background:#090909;color:#fff;border-radius:8px;outline:none}input:focus,select:focus,textarea:focus{border-color:#555}textarea{min-height:85px;resize:vertical}.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.check{display:flex;gap:8px;align-items:center;background:#0b0b0b;border:1px solid var(--line);padding:10px;border-radius:8px}.check input{width:auto}
+table{width:100%;border-collapse:collapse;min-width:850px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:11px;text-transform:uppercase}td{font-size:12px}.tablewrap{overflow:auto}.pill{display:inline-block;border-radius:99px;padding:4px 8px;font-size:10px;background:#222}.pill.ok{background:#102619;color:var(--green)}.pill.bad{background:#2a1111;color:#ff8a8a}.pill.gold{background:#2a220f;color:var(--gold)}
+.rule{padding:13px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:15px}.rule:last-child{border:0}.toggle{width:45px;height:24px;border-radius:20px;background:#333;position:relative;cursor:pointer;flex:none}.toggle i{position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#999;transition:.2s}.toggle.on{background:var(--gold)}.toggle.on i{left:24px;background:#111}
+.kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mini{background:#0b0b0b;border:1px solid var(--line);border-radius:9px;padding:11px}.mini strong{display:block;font-size:18px;margin-top:4px}.empty{padding:25px;text-align:center;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.toast{position:fixed;right:15px;bottom:15px;background:#171717;border:1px solid var(--line);padding:12px 15px;border-radius:10px;display:none;z-index:50}.toast.show{display:block}.dangerbox{background:#211010;border:1px solid #4b2020;padding:13px;border-radius:9px;color:#ffb0b0}.goodbox{background:#0e2015;border:1px solid #1d4b2d;padding:13px;border-radius:9px;color:#a7e7bd}
+@media(max-width:900px){.grid,.grid3,.two,form{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}.head{align-items:flex-start}.kpi{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid,.grid3,.two,form,.checks{grid-template-columns:1fr}.head{display:block}.head .actions{margin-top:10px}}
+</style>
+</head>
+<body>
+<header>
+<div class="head"><div><div class="logo">Accounta<b>Trade</b></div><div class="tag">Every trade. Every lesson. Every step forward.</div></div><div class="actions"><button class="btn primary" onclick="go('add')">+ Log Trade</button></div></div>
+<nav>
+<button class="active" data-page="dashboard">Dashboard</button><button data-page="journal">Journal</button><button data-page="coach">AI-Ready Coach</button><button data-page="analytics">Analytics</button><button data-page="rules">Rules</button><button data-page="goals">Goals</button><button data-page="settings">Settings</button>
+</nav>
+</header>
+
+<main>
+<section id="dashboard" class="page active">
+<h1>Dashboard</h1><div class="sub">See the trader behind the P&L.</div>
+<div class="grid">
+<div class="card"><div class="label">Net P&L</div><div id="sPnl" class="value">$0.00</div></div>
+<div class="card"><div class="label">Win Rate</div><div id="sWin" class="value">0%</div></div>
+<div class="card"><div class="label">Total Trades</div><div id="sTrades" class="value">0</div></div>
+<div class="card"><div class="label">Process Score</div><div id="sProcess" class="value">0%</div></div>
+</div>
+<div class="grid" style="margin-top:12px">
+<div class="card"><div class="label">Wins</div><div id="sWins" class="value green">0</div></div>
+<div class="card"><div class="label">Losses</div><div id="sLosses" class="value red">0</div></div>
+<div class="card"><div class="label">Avg R</div><div id="sR" class="value gold">0.00R</div></div>
+<div class="card"><div class="label">Profit Factor</div><div id="sPF" class="value">0.00</div></div>
+</div>
+<div class="two">
+<div class="section"><h2>Coach Snapshot</h2><div id="snapshot" class="insight"></div></div>
+<div class="section"><h2>Today's Process</h2><div id="todayKpi" class="kpi"></div></div>
+</div>
+<div class="section"><h2>Recent Trades</h2><div id="recent"></div></div>
+</section>
+
+<section id="journal" class="page">
+<h1>Journal</h1><div class="sub">Every trade becomes evidence.</div>
+<div class="section">
+<div class="actions"><input id="search" placeholder="Search symbol, setup, emotion..." oninput="renderJournal()" style="max-width:320px"><select id="filterResult" onchange="renderJournal()" style="max-width:160px"><option value="all">All results</option><option value="win">Wins</option><option value="loss">Losses</option></select></div>
+<div id="journalTable" class="tablewrap" style="margin-top:15px"></div></div>
+</section>
+
+<section id="coach" class="page">
+<h1>Discipline Coach</h1><div class="sub">Automatic evidence first. No fake intelligence.</div>
+<div class="two"><div class="section"><h2>Recurring Violations</h2><div id="violations"></div></div><div class="section"><h2>Current Focus</h2><div id="focus" class="insight"></div></div></div>
+<div class="section"><h2>Rule Performance</h2><div id="rulePerformance"></div></div>
+<div class="section"><h2>Today's Review</h2><div id="todayReview"></div></div>
+<div class="section"><h2>What the future AI coach will use</h2><div class="muted">Your journal already captures the raw ingredients: setup, bias, session, emotion, process checks, P&L, reason and lesson. The next architecture step is a real database + authentication + server-side analytics + AI layer. This page is deliberately deterministic so the coaching data stays auditable.</div></div>
+</section>
+
+<section id="analytics" class="page">
+<h1>Analytics</h1><div class="sub">Find what actually makes money — and what repeatedly costs you.</div>
+<div class="grid3">
+<div class="card"><div class="label">Best Session</div><div id="bestSession" class="value gold">—</div></div>
+<div class="card"><div class="label">Best Setup</div><div id="bestSetup" class="value gold">—</div></div>
+<div class="card"><div class="label">Most Common Emotion</div><div id="topEmotion" class="value">—</div></div>
+</div>
+<div class="two">
+<div class="section"><h2>By Setup</h2><div id="setupStats"></div></div>
+<div class="section"><h2>By Session</h2><div id="sessionStats"></div></div>
+</div>
+<div class="section"><h2>By Emotion</h2><div id="emotionStats"></div></div>
+</section>
+
+<section id="rules" class="page">
+<h1>Trading Rules</h1><div class="sub">Rules are only useful when behavior can be measured.</div>
+<div class="section"><div id="rulesList"></div></div>
+</section>
+
+<section id="goals" class="page">
+<h1>Goals</h1><div class="sub">Build around process, not fantasy P&L targets.</div>
+<div class="section"><form id="goalForm">
+<div><label>Goal</label><input id="goalName" placeholder="e.g. Follow the 3-trade limit"></div>
+<div><label>Target</label><input id="goalTarget" placeholder="e.g. 90% of sessions"></div>
+<div><label>Deadline</label><input id="goalDate" type="date"></div>
+<div class="full"><button class="btn primary">Save Goal</button></div></form></div>
+<div class="section"><div id="goalsList"></div></div>
+</section>
+
+<section id="settings" class="page">
+<h1>Settings</h1><div class="sub">Local-first for now. Cloud sync comes later.</div>
+<div class="section"><h2>AccountaTrade Data</h2><div class="statline"><span>Stored trades</span><b id="settingCount">0</b></div><div class="statline"><span>Storage</span><b>Browser localStorage</b></div><div class="statline"><span>Version</span><b>Full Index V2</b></div><div class="actions" style="margin-top:14px"><button class="btn" onclick="exportData()">Export Backup</button><button class="btn" onclick="importData()">Import Backup</button><button class="btn danger" onclick="clearAll()">Delete All Local Data</button></div><input id="importFile" type="file" accept=".json" hidden></div>
+<div class="section"><h2>Trading Configuration</h2><div class="two"><div><label>Default symbol</label><input id="cfgSymbol" value="XAUUSD" onchange="saveCfg()"></div><div><label>Max trades/day</label><input id="cfgMax" type="number" min="1" value="3" onchange="saveCfg()"></div></div></div>
+</section>
+
+<section id="add" class="page">
+<h1>Log Trade</h1><div class="sub">Log the process, not just the outcome.</div>
+<div class="section"><form id="tradeForm">
+<div><label>Date & time</label><input id="date" type="datetime-local" required></div>
+<div><label>Symbol</label><input id="symbol" placeholder="XAUUSD" required></div>
+<div><label>Side</label><select id="side"><option>BUY</option><option>SELL</option></select></div>
+<div><label>Session</label><select id="session"><option>New York</option><option>London</option><option>Asia</option><option>Other</option></select></div>
+<div><label>Entry</label><input id="entry" type="number" step="any"></div>
+<div><label>Stop Loss</label><input id="sl" type="number" step="any"></div>
+<div><label>Take Profit</label><input id="tp" type="number" step="any"></div>
+<div><label>Exit</label><input id="exit" type="number" step="any"></div>
+<div><label>P&L ($)</label><input id="pnl" type="number" step="any" required></div>
+<div><label>Setup</label><input id="setup" placeholder="MSS + FVG / OB"></div>
+<div><label>Bias</label><select id="bias"><option>Buy</option><option>Sell</option><option>Neutral</option></select></div>
+<div><label>Emotion</label><select id="emotion"><option>Calm</option><option>Confident</option><option>FOMO</option><option>Revenge</option><option>Fear</option><option>Greed</option><option>Bored</option><option>Frustrated</option><option>Other</option></select></div>
+<div class="full"><label>Process checks</label><div class="checks">
+<label class="check"><input id="preJournal" type="checkbox"> Journal completed before charts</label>
+<label class="check"><input id="confirmation" type="checkbox"> Full confirmation received</label>
+<label class="check"><input id="addedLoser" type="checkbox"> Added to a losing position</label>
+<label class="check"><input id="manualClose" type="checkbox"> Closed manually before TP/SL</label>
+<label class="check"><input id="revengeAfterLoss" type="checkbox"> I entered mainly to recover a loss</label>
+<label class="check"><input id="riskPlanned" type="checkbox"> Risk was planned before entry</label>
+</div></div>
+<div class="full"><label>Reason for trade</label><textarea id="reason" placeholder="Bias → POI → confirmation → execution..."></textarea></div>
+<div class="full"><label>Lesson</label><textarea id="lesson" placeholder="What should be repeated or changed?"></textarea></div>
+<div class="full"><button class="btn primary" type="submit">Save Trade</button></div>
+</form></div>
+</section>
+</main>
+<div id="toast" class="toast"></div>
+
+<script>
+const TRADE_KEY='accountatrade_v1_trades', RULE_KEY='accountatrade_v1_rules', GOAL_KEY='accountatrade_v2_goals', CFG_KEY='accountatrade_v2_cfg';
+const defaultRules=['One SL ends the day','Maximum 3 trades per day','Journal before opening charts','No adding to losing positions','No revenge trading','No FOMO entries','Wait for full confirmation','Respect the planned SL','Let planned TP play out','Trade only my defined setup','Plan risk before entry'];
+let trades=JSON.parse(localStorage.getItem(TRADE_KEY)||'[]');
+let rules=JSON.parse(localStorage.getItem(RULE_KEY)||'null');
+let goals=JSON.parse(localStorage.getItem(GOAL_KEY)||'[]');
+let cfg=JSON.parse(localStorage.getItem(CFG_KEY)||'null')||{symbol:'XAUUSD',maxTrades:3};
+if(!rules){rules=Object.fromEntries(defaultRules.map(x=>[x,true]));localStorage.setItem(RULE_KEY,JSON.stringify(rules));}
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const pnl=t=>Number(t.pnl||t.PnL||0);
+const dkey=t=>new Date(t.date||t.datetime||0).toLocaleDateString();
+const win=t=>pnl(t)>0;
+const rr=t=>{let e=+t.entry,s=+t.sl,tp=+t.tp;if(!e||!s||!tp)return null;let r=Math.abs(e-s);return r?Math.abs(tp-e)/r:null};
+function toast(x){$('toast').textContent=x;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));if(id==='dashboard')renderAll();if(id==='journal')renderJournal();if(id==='coach')renderCoach();if(id==='analytics')renderAnalytics();if(id==='rules')renderRules();if(id==='goals')renderGoals();if(id==='settings')renderSettings();if(id==='add')setDate()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.page));
+function setDate(){if(!$('date').value)$('date').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16)}
+function daily(t){return trades.filter(x=>dkey(x)===dkey(t)).sort((a,b)=>new Date(a.date)-new Date(b.date))}
+function violations(t){
+ let out=[],day=daily(t),idx=day.findIndex(x=>x.id===t.id);
+ if(idx>=cfg.maxTrades && rules['Maximum 3 trades per day'])out.push('Maximum trades/day');
+ if(t.preJournal===false&&rules['Journal before opening charts'])out.push('Journal before charts');
+ if(t.addedLoser===true&&rules['No adding to losing positions'])out.push('Added to loser');
+ if((t.revengeAfterLoss===true||t.emotion==='Revenge')&&rules['No revenge trading'])out.push('Revenge trading');
+ if(t.emotion==='FOMO'&&rules['No FOMO entries'])out.push('FOMO');
+ if(t.confirmation===false&&rules['Wait for full confirmation'])out.push('No confirmation');
+ if(t.riskPlanned===false&&t.riskPlanned!==undefined&&rules['Plan risk before entry'])out.push('Risk not planned');
+ let e=+t.entry,s=+t.sl,x=+t.exit;if(e&&s&&x&&rules['Respect the planned SL']){if(t.side==='BUY'&&x<s)out.push('SL breach');if(t.side==='SELL'&&x>s)out.push('SL breach')}
+ if(t.manualClose===true&&pnl(t)>0&&rules['Let planned TP play out'])out.push('Possible early TP exit');
+ if(!t.setup&&rules['Trade only my defined setup'])out.push('No setup logged');
+ return out
+}
+function processScore(){if(!trades.length)return 0;let checked=0,bad=0;trades.forEach(t=>{let v=violations(t);checked+=Math.max(1,v.length+1);bad+=v.length});return Math.round(Math.max(0,1-bad/checked)*100)}
+function stats(list=trades){
+ let total=list.reduce((a,t)=>a+pnl(t),0),w=list.filter(win).length,l=list.length-w,gw=list.filter(t=>pnl(t)>0).reduce((a,t)=>a+pnl(t),0),gl=Math.abs(list.filter(t=>pnl(t)<0).reduce((a,t)=>a+pnl(t),0)),rs=list.map(rr).filter(x=>x!==null);
+ return {total,w,l,wr:list.length?w/list.length*100:0,pf:gl?gw/gl:gw?'∞':0,avgR:rs.length?rs.reduce((a,b)=>a+b,0)/rs.length:0}
+}
+function renderStats(){let s=stats();$('sPnl').textContent=(s.total<0?'-':'')+'$'+Math.abs(s.total).toFixed(2);$('sPnl').className='value '+(s.total>=0?'green':'red');$('sWin').textContent=s.wr.toFixed(0)+'%';$('sTrades').textContent=trades.length;$('sProcess').textContent=processScore()+'%';$('sWins').textContent=s.w;$('sLosses').textContent=s.l;$('sR').textContent=s.avgR.toFixed(2)+'R';$('sPF').textContent=s.pf}
+function table(list){if(!list.length)return '<div class="empty">No trades found.</div>';return '<table><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>P&L</th><th>Setup</th><th>Emotion</th><th>Process</th><th>Lesson</th></tr></thead><tbody>'+list.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(t=>{let v=violations(t);return `<tr><td>${esc(new Date(t.date).toLocaleString())}</td><td>${esc(t.symbol)}</td><td>${esc(t.side)}</td><td class="${pnl(t)>=0?'green':'red'}">${pnl(t)<0?'-':''}$${Math.abs(pnl(t)).toFixed(2)}</td><td>${esc(t.setup||'—')}</td><td>${esc(t.emotion||'—')}</td><td>${v.length?'<span class="pill bad">'+v.length+' issue'+(v.length>1?'s':'')+'</span>':'<span class="pill ok">Clean</span>'}</td><td>${esc(t.lesson||'—')}</td></tr>`}).join('')+'</tbody></table>'}
+function coachText(){if(!trades.length)return 'No data yet. Start by logging trades honestly — the coach gets smarter as the journal gets richer.';let all=trades.flatMap(t=>violations(t).map(r=>({r,t})));if(!all.length)return 'No recorded violations from the checks currently enabled. Protect the process regardless of whether the last trade won or lost.';let c={};all.forEach(x=>c[x.r]=(c[x.r]||0)+1);let top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];return `<b>${esc(top[0])}</b> is your most frequent recorded issue (${top[1]}). Your next session focus: make this rule a pre-entry checkpoint, not a post-loss promise.`}
+function renderDashboard(){let s=stats(),today=trades.filter(t=>dkey(t)===new Date().toLocaleDateString()),tp=today.reduce((a,t)=>a+pnl(t),0),tv=today.flatMap(violations);$('snapshot').innerHTML=coachText();$('todayKpi').innerHTML=`<div class="mini"><span class="label">Trades</span><strong>${today.length}/${cfg.maxTrades}</strong></div><div class="mini"><span class="label">P&L</span><strong class="${tp>=0?'green':'red'}">${tp<0?'-':''}$${Math.abs(tp).toFixed(2)}</strong></div><div class="mini"><span class="label">Issues</span><strong class="${tv.length?'red':'green'}">${tv.length}</strong></div><div class="mini"><span class="label">Process</span><strong>${today.length?Math.max(0,100-tv.length*15):0}%</strong></div>`;$('recent').innerHTML=table(trades.slice(0,8))}
+function renderJournal(){let q=($('search')?.value||'').toLowerCase(),f=$('filterResult')?.value||'all';let list=trades.filter(t=>(!q||JSON.stringify(t).toLowerCase().includes(q))&&(f==='all'||(f==='win'&&win(t))||(f==='loss'&&!win(t))));$('journalTable').innerHTML=table(list)}
+function renderCoach(){let counts={};trades.flatMap(violations).forEach(x=>counts[x]=(counts[x]||0)+1);$('violations').innerHTML=Object.keys(rules).map(r=>`<div class="rule"><span>${esc(r)}</span><span class="${counts[r]?'red':''}">${counts[r]||0}</span></div>`).join('');$('focus').innerHTML=coachText();let today=trades.filter(t=>dkey(t)===new Date().toLocaleDateString()),tv=today.flatMap(violations);$('todayReview').innerHTML=`<div class="grid3"><div class="card"><div class="label">Trades</div><div class="value">${today.length}</div></div><div class="card"><div class="label">P&L</div><div class="value ${today.reduce((a,t)=>a+pnl(t),0)>=0?'green':'red'}">$${today.reduce((a,t)=>a+pnl(t),0).toFixed(2)}</div></div><div class="card"><div class="label">Issues</div><div class="value ${tv.length?'red':'green'}">${tv.length}</div></div></div>`;$('rulePerformance').innerHTML=Object.keys(rules).map(r=>{let relevant=trades.filter(t=>violations(t).includes(r));return `<div class="statline"><span>${esc(r)}</span><span>${relevant.length?'<span class="pill bad">'+relevant.length+' issue'+(relevant.length>1?'s':'')+'</span>':'<span class="pill ok">No recorded issue</span>'}</span></div>`}).join('')}
+function grouped(field){let o={};trades.forEach(t=>{let k=t[field]||'Unknown';if(!o[k])o[k]={n:0,p:0,w:0};o[k].n++;o[k].p+=pnl(t);if(win(t))o[k].w++});return o}
+function groupHTML(o){let keys=Object.keys(o).sort((a,b)=>o[b].p-o[a].p);if(!keys.length)return '<div class="empty">Not enough data.</div>';return keys.map(k=>`<div class="statline"><span>${esc(k)} <span class="muted">(${o[k].n})</span></span><span class="${o[k].p>=0?'green':'red'}">$${o[k].p.toFixed(2)} · ${Math.round(o[k].w/o[k].n*100)}%</span></div>`).join('')}
+function renderAnalytics(){let ss=grouped('setup'),se=grouped('session'),em=grouped('emotion');$('setupStats').innerHTML=groupHTML(ss);$('sessionStats').innerHTML=groupHTML(se);$('emotionStats').innerHTML=groupHTML(em);let best=x=>Object.entries(x).sort((a,b)=>b[1].p-a[1].p)[0]?.[0]||'—';$('bestSetup').textContent=best(ss);$('bestSession').textContent=best(se);$('topEmotion').textContent=Object.entries(em).sort((a,b)=>b[1].n-a[1].n)[0]?.[0]||'—'}
+function renderRules(){$('rulesList').innerHTML=Object.keys(rules).map(r=>`<div class="rule"><span>${esc(r)}</span><span class="toggle ${rules[r]?'on':''}" onclick="toggleRule(${JSON.stringify(r)})"><i></i></span></div>`).join('')}
+window.toggleRule=r=>{rules[r]=!rules[r];localStorage.setItem(RULE_KEY,JSON.stringify(rules));renderRules();renderAll();toast((rules[r]?'Enabled: ':'Disabled: ')+r)}
+function renderGoals(){if(!goals.length){$('goalsList').innerHTML='<div class="empty">No goals yet.</div>';return}$('goalsList').innerHTML=goals.map((g,i)=>`<div class="rule"><div><b>${esc(g.name)}</b><div class="muted small">Target: ${esc(g.target||'—')} · Deadline: ${esc(g.date||'—')}</div></div><button class="btn danger" onclick="deleteGoal(${i})">Delete</button></div>`).join('')}
+$('goalForm').onsubmit=e=>{e.preventDefault();goals.push({name:$('goalName').value,target:$('goalTarget').value,date:$('goalDate').value});localStorage.setItem(GOAL_KEY,JSON.stringify(goals));e.target.reset();renderGoals();toast('Goal saved')}
+window.deleteGoal=i=>{goals.splice(i,1);localStorage.setItem(GOAL_KEY,JSON.stringify(goals));renderGoals()}
+function renderSettings(){$('settingCount').textContent=trades.length;$('cfgSymbol').value=cfg.symbol;$('cfgMax').value=cfg.maxTrades}
+function saveCfg(){cfg={symbol:$('cfgSymbol').value||'XAUUSD',maxTrades:Math.max(1,+$('cfgMax').value||3)};localStorage.setItem(CFG_KEY,JSON.stringify(cfg));renderAll()}
+function exportData(){let data={version:'full-index-v2',trades,rules,goals,cfg,exportedAt:new Date().toISOString()};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='accountatrade-backup.json';a.click();URL.revokeObjectURL(a.href);toast('Backup exported')}
+function importData(){let f=$('importFile');f.click();f.onchange=()=>{let file=f.files[0];if(!file)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(Array.isArray(d.trades))trades=d.trades;if(d.rules)rules=d.rules;if(Array.isArray(d.goals))goals=d.goals;if(d.cfg)cfg=d.cfg;localStorage.setItem(TRADE_KEY,JSON.stringify(trades));localStorage.setItem(RULE_KEY,JSON.stringify(rules));localStorage.setItem(GOAL_KEY,JSON.stringify(goals));localStorage.setItem(CFG_KEY,JSON.stringify(cfg));renderAll();renderRules();renderSettings();toast('Backup imported')}catch(e){toast('Invalid backup file')}}};r.readAsText(file)}}
+function clearAll(){if(confirm('Delete ALL AccountaTrade local data? This cannot be undone unless you have a backup.')){localStorage.removeItem(TRADE_KEY);localStorage.removeItem(RULE_KEY);localStorage.removeItem(GOAL_KEY);localStorage.removeItem(CFG_KEY);location.reload()}}
+$('tradeForm').onsubmit=e=>{e.preventDefault();let t={id:Date.now(),date:$('date').value,symbol:$('symbol').value.toUpperCase(),side:$('side').value,session:$('session').value,entry:$('entry').value,sl:$('sl').value,tp:$('tp').value,exit:$('exit').value,pnl:+$('pnl').value,setup:$('setup').value,bias:$('bias').value,emotion:$('emotion').value,preJournal:$('preJournal').checked,confirmation:$('confirmation').checked,addedLoser:$('addedLoser').checked,manualClose:$('manualClose').checked,revengeAfterLoss:$('revengeAfterLoss').checked,riskPlanned:$('riskPlanned').checked,reason:$('reason').value,lesson:$('lesson').value};trades.push(t);localStorage.setItem(TRADE_KEY,JSON.stringify(trades));e.target.reset();setDate();toast('Trade saved');go('dashboard')}
+function renderAll(){renderStats();renderDashboard();renderJournal();renderCoach();renderAnalytics();renderRules();renderGoals();renderSettings()}
+setDate();renderAll();
+</script>
+</body>
+</html>
